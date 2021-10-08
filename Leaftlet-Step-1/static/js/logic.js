@@ -1,7 +1,7 @@
 // Create a map object.
 var myMap = L.map("map", {
-    center: [15.5994, -28.6731],
-    zoom: 3
+    center: [37, -97],
+    zoom: 3.6
 });
 
 // Add a copyright layer
@@ -9,8 +9,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
-// API reports 4.5+ earthquakes from the past 7 days
-let queryURL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson'
+// API reports all earthquakes from the past 7 days
+let queryURL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson'
 
 // request data and create markers using function/
 d3.json(queryURL).then(data => {
@@ -23,29 +23,30 @@ function createFeatures(quakeData) {
     for (var i = 0; i < quakeData.length; i++) {
         let currQuake = quakeData[i].geometry;
         let currQuakeDepth =  currQuake.coordinates[2]  
+        
         var color = ""; // conditional formatting for depth
-        if (currQuakeDepth < 50) {
-            color = "green";
-        }
+        if (currQuakeDepth < 10) {
+            color = "#90EE90";}
+        else if (currQuakeDepth < 25) {
+            color = "limegreen";}
+        else if (currQuakeDepth < 75) {
+            color = "yellow";}
         else if (currQuakeDepth < 100) {
-            color = "yellow";
-        }
-        else if (currQuakeDepth < 250) {
-            color = "orange";
-        }
+            color = "orange";}
         else {
-            color = "red";
-        }
+            color = "red";}
         
         // add circles to the map.
+        let currQuakeProps = quakeData[i].properties
         L.circle([currQuake.coordinates[1],currQuake.coordinates[0]], {
             fillOpacity: 0.75,
-            color: "black",
-            weight: 1,
+            color: 'white',
+            weight: .5,
             fillColor: color,
-            radius: 100000
-        }).addTo(myMap);
-        // .bindPopup(`<h1>${countries[i].name}</h1> <hr> <h3>Points: ${countries[i].points}</h3>`).addTo(myMap);
+            radius: currQuakeProps.mag * 50000
+        })
+        .bindPopup(`<h2>${currQuakeProps.place}</h2> <hr> <h3>Magnitude: ${currQuakeProps.mag}</h3>`)
+        .addTo(myMap);
     }
 };
         
