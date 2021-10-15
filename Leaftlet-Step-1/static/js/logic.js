@@ -68,5 +68,24 @@ function createFeatures(quakeData) {
     }
 };
 
+let legend = L.control({ position: "bottomright" });
+legend.onAdd = () => {
+    let div = L.DomUtil.create("div", "info legend");
+    let legendInfo = "<p>Earthquake Depth <br> (kilometers)</p>" +
+        "<div class=\"labels\">" +
+        "</div>";
+    div.innerHTML = legendInfo;
+    let depthCats = ['< 10km','10 - 25km','25 - 75km','75 - 100km','> 100km'];
+    let colors = ['#90EE90','limegreen','yellow','orange','red'];
+    let labels = [];
+    depthCats.forEach((a, i) => {
+        labels.push("<li><div style=\"background-color: " + colors[i] + "\"></div>&nbsp;&nbsp;" + depthCats[i] + "</li>");
+    });
+    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+    return div;
+};
+
+legend.addTo(quakeMap);
+
 // POPULATE LEGEND 
 
